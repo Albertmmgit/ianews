@@ -1,0 +1,28 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts.map((post) => ({
+		params: { slug: post.id },
+	}));
+}
+
+const { slug } = Astro.params;
+const posts = await getCollection('blog');
+const post = posts.find((p) => p.id === slug);
+
+let Content;
+if (post) {
+	({ Content } = await render(post));
+}
+---
+
+{post ? (
+  <BlogPost {...post.data}>
+    {Content && <Content />}
+  </BlogPost>
+) : (
+  <h1>Entrada no encontrada</h1>
+)}
